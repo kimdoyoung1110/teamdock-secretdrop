@@ -1,0 +1,14 @@
+{
+  "name": "teamdock-secretdrop",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "infra:up": "docker compose -f infra/compose.dev.yml up -d",
+    "infra:down": "docker compose -f infra/compose.dev.yml down",
+    "infra:reset": "docker compose -f infra/compose.dev.yml down -v",
+    "infra:logs": "docker compose -f infra/compose.dev.yml logs -f keycloak",
+    "dev:teamdock": "pnpm --filter teamdock dev",
+    "dev:secretdrop": "pnpm --filter secretdrop dev",
+    "infra:admin-http": "docker compose -f infra/compose.dev.yml exec keycloak sh -c '/opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080 --realm master --user admin --password admin && /opt/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE'"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "realm": "teamdock",
+  "displayName": "TeamDock 계정",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "resetPasswordAllowed": false,
+  "internationalizationEnabled": true,
+  "supportedLocales": ["ko", "en"],
+  "defaultLocale": "ko",
+  "clients": [
+    {
+      "clientId": "teamdock",
+      "name": "TeamDock",
+      "description": "서비스 A - 팀 워크스페이스",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-teamdock-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "rootUrl": "http://localhost:9000",
+      "baseUrl": "http://localhost:9000",
+      "redirectUris": ["http://localhost:9000/api/auth/callback/keycloak"],
+      "webOrigins": ["http://localhost:9000"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:9000/*",
+        "backchannel.logout.url": "http://host.docker.internal:9000/api/backchannel-logout",
+        "backchannel.logout.session.required": "true"
+      }
+    },
+    {
+      "clientId": "secretdrop",
+      "name": "SecretDrop",
+      "description": "서비스 B - 시크릿 공유",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "dev-secretdrop-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "rootUrl": "http://localhost:9001",
+      "baseUrl": "http://localhost:9001",
+      "redirectUris": ["http://localhost:9001/api/auth/callback/keycloak"],
+      "webOrigins": ["http://localhost:9001"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:9001/*",
+        "backchannel.logout.url": "http://host.docker.internal:9001/api/backchannel-logout",
+        "backchannel.logout.session.required": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "teamdock-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "teamdock",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "alice",
+      "email": "alice@example.com",
+      "firstName": "Alice",
+      "lastName": "Kim",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "alice1234", "temporary": false }]
+    },
+    {
+      "username": "bob",
+      "email": "bob@example.com",
+      "firstName": "Bob",
+      "lastName": "Lee",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "bob1234", "temporary": false }]
+    }
+  ]
+}

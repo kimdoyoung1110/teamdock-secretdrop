@@ -1,0 +1,44 @@
+# 로컬 개발용: Postgres + Keycloak. 값은 전부 개발 전용이며 운영에 쓰지 않는다.
+name: teamdock-secretdrop
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d keycloak"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: dev
+      KC_DB_PASSWORD: dev
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      # 8080은 다른 로컬 서비스와 겹치기 쉬워 8180을 쓴다.
+      - "8180:8080"
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/teamdock-realm.json:ro
+    extra_hosts:
+      # Back-Channel Logout: 컨테이너 안의 Keycloak이 호스트에서 도는 앱을 호출한다.
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

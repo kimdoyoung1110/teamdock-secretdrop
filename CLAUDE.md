@@ -11,7 +11,7 @@
 
 - **TeamDock (서비스 A, 로컬 9000)**: 팀 워크스페이스. 팀 생성, 초대 링크 합류, 멤버·역할(Owner/Member), `GET /api/teams/me`(Access Token 보호). "이 팀에 시크릿 공유하기" 버튼이 SSO 시연 지점.
 - **SecretDrop (서비스 B, 로컬 9001)**: 시크릿 공유. 만료 시간, 1회 열람 후 파기, 비밀번호 보호(선택), 공개 범위(링크 소지자 / 팀 전용), 내 시크릿 목록과 열람 기록.
-- **Keycloak (로컬 8080)**: realm 1개, confidential client 2개, OIDC Authorization Code + PKCE(S256).
+- **Keycloak (로컬 8180)**: realm 1개, confidential client 2개, OIDC Authorization Code + PKCE(S256).
 
 ## 과제 요구사항 (빠뜨리면 감점)
 
