@@ -10,6 +10,6 @@
     "dev:teamdock": "pnpm --filter teamdock dev",
     "dev:secretdrop": "pnpm --filter secretdrop dev",
     "infra:admin-http": "docker compose -f infra/compose.dev.yml exec keycloak sh -c '/opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080 --realm master --user admin --password admin && /opt/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE'",
-    "docs:diagrams": "d2 docs/architecture/system.d2 docs/architecture/system.svg && d2 docs/architecture/platform.d2 docs/architecture/platform.svg"
+    "docs:diagrams": "node docs/architecture/build.mjs"
   }
 }

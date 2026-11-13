@@ -19,32 +19,22 @@ Keycloak은 요청이 없으면 0대로 줄어든다. 오랜만에 접속하면 
 
 ## 아키텍처
 
-### 시스템 아키텍처
+![시스템·플랫폼 아키텍처](docs/architecture/architecture.png)
 
-실행 중에 누가 누구와 왜 통신하는지를 나타낸다.
-
-![시스템 아키텍처](docs/architecture/system.svg)
+한 장에 실행 구조와 배포 위치를 함께 그렸다. 상자는 어디서 돌아가는지(Vercel, Google Cloud, Neon)를, 선은 무엇이 오가는지를 나타낸다.
 
 | 선 | 의미 |
 |---|---|
-| 검은 실선 ①②③ | 브라우저를 거치는 흐름. ②에서 한 번 로그인하면 Keycloak 세션 쿠키가 남아, ③에서 SecretDrop에 갈 때 로그인 화면이 뜨지 않는다(SSO). |
-| 빨간 점선 | 서버끼리 직접 하는 통신. 서비스가 `code`를 Client Secret과 함께 토큰으로 바꾸고, 로그아웃 시 Keycloak이 각 서비스에 Back-Channel Logout을 보낸다. |
-| 보라 실선 ④ | SecretDrop이 사용자의 Access Token으로 TeamDock에 팀 소속을 묻는다. 팀 전용 시크릿의 권한 확인에 쓴다. |
-| 회색 선 | 각 서비스 전용 DB. 서로의 DB에는 접근하지 않는다. |
+| 파란 실선 | 브라우저를 거치는 흐름. 브라우저가 Keycloak에서 한 번 로그인하면 세션 쿠키가 남아, 두 서비스 모두 로그인 화면 없이 들어간다(SSO). SecretDrop으로는 WebCrypto가 암호화한 암호문만 올라간다. |
+| 회색 실선 | 서비스 내부와 서버 간 통신. Auth.js가 Keycloak과 토큰을 교환하고, 로그아웃 시 Keycloak이 각 서비스에 Back-Channel Logout을 보낸다. SecretDrop은 `GET /api/teams/me`로 TeamDock에 팀 소속을 묻는다. |
+| 점선 | 빌드와 배포. `main`에 push하면 Vercel이 두 앱을 배포하고, Keycloak은 이미지를 올려 Cloud Run에 배포한다. |
 
-브라우저와 SecretDrop 사이에는 암호문만 오간다. 암호화와 복호화는 브라우저의 WebCrypto가 하고, 키는 링크의 `#` 뒤에만 있다.
+- TeamDock이 서비스 A, SecretDrop이 서비스 B다. 같은 레포를 Vercel 프로젝트 2개에 연결하고 Root Directory만 다르게 두었다.
+- Keycloak은 상시 실행되는 컨테이너라 Vercel에 올릴 수 없어 Cloud Run에 올렸다.
+- DB는 Neon 인스턴스 하나에 서비스별로 3개다. 서로의 DB에는 접근하지 않는다.
+- 로컬은 docker compose로 같은 `realm-export.json`을 쓴다. 주소와 Client Secret만 환경변수로 달라진다.
 
-### 플랫폼 아키텍처
-
-코드가 어디서 빌드되어 어디에 올라가는지를 나타낸다.
-
-![플랫폼 아키텍처](docs/architecture/platform.svg)
-
-- `main`에 push하면 Vercel이 두 앱을 각각 배포한다. 같은 레포를 프로젝트 2개에 연결하고 Root Directory만 다르게 두었다.
-- Keycloak은 상시 실행되는 컨테이너라 Vercel에 올릴 수 없어, 이미지를 빌드해 Cloud Run에 올린다.
-- 로컬과 운영은 같은 `realm-export.json`을 쓴다. 주소와 Client Secret만 환경변수로 달라진다.
-
-다이어그램은 [D2](https://d2lang.com)(오픈소스, 텍스트로 쓰는 다이어그램 도구)로 그렸고, 기술 로고는 [Simple Icons](https://simpleicons.org)(CC0)를 썼다. 소스는 [docs/architecture/](docs/architecture)에 있고, 고친 뒤 `pnpm docs:diagrams`로 다시 그린다(`brew install d2` 필요).
+그림은 [stack-diagram](https://github.com/caru-ini/stack-diagram)(오픈소스)의 템플릿으로 그렸다. 원본과 고치는 방법은 [docs/architecture/](docs/architecture)에 있다.
 
 ## 발표 자료
 
