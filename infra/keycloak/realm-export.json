@@ -2,7 +2,7 @@
   "realm": "teamdock",
   "displayName": "TeamDock 계정",
   "enabled": true,
-  "sslRequired": "none",
+  "sslRequired": "${KC_REALM_SSL_REQUIRED:none}",
   "registrationAllowed": true,
   "loginWithEmailAllowed": true,
   "resetPasswordAllowed": false,
@@ -21,23 +21,23 @@
       "protocol": "openid-connect",
       "publicClient": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "dev-teamdock-secret",
+      "secret": "${TEAMDOCK_CLIENT_SECRET:dev-teamdock-secret}",
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
-      "rootUrl": "http://localhost:9000",
-      "baseUrl": "http://localhost:9000",
+      "rootUrl": "${TEAMDOCK_URL:http://localhost:9000}",
+      "baseUrl": "${TEAMDOCK_URL:http://localhost:9000}",
       "redirectUris": [
-        "http://localhost:9000/api/auth/callback/keycloak"
+        "${TEAMDOCK_URL:http://localhost:9000}/api/auth/callback/keycloak"
       ],
       "webOrigins": [
-        "http://localhost:9000"
+        "${TEAMDOCK_URL:http://localhost:9000}"
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://localhost:9000/*",
-        "backchannel.logout.url": "http://host.docker.internal:9000/api/backchannel-logout",
+        "post.logout.redirect.uris": "${TEAMDOCK_URL:http://localhost:9000}/*",
+        "backchannel.logout.url": "${TEAMDOCK_BACKCHANNEL_URL:http://host.docker.internal:9000}/api/backchannel-logout",
         "backchannel.logout.session.required": "true"
       }
     },
@@ -49,23 +49,23 @@
       "protocol": "openid-connect",
       "publicClient": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "dev-secretdrop-secret",
+      "secret": "${SECRETDROP_CLIENT_SECRET:dev-secretdrop-secret}",
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
-      "rootUrl": "http://localhost:9001",
-      "baseUrl": "http://localhost:9001",
+      "rootUrl": "${SECRETDROP_URL:http://localhost:9001}",
+      "baseUrl": "${SECRETDROP_URL:http://localhost:9001}",
       "redirectUris": [
-        "http://localhost:9001/api/auth/callback/keycloak"
+        "${SECRETDROP_URL:http://localhost:9001}/api/auth/callback/keycloak"
       ],
       "webOrigins": [
-        "http://localhost:9001"
+        "${SECRETDROP_URL:http://localhost:9001}"
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
-        "post.logout.redirect.uris": "http://localhost:9001/*",
-        "backchannel.logout.url": "http://host.docker.internal:9001/api/backchannel-logout",
+        "post.logout.redirect.uris": "${SECRETDROP_URL:http://localhost:9001}/*",
+        "backchannel.logout.url": "${SECRETDROP_BACKCHANNEL_URL:http://host.docker.internal:9001}/api/backchannel-logout",
         "backchannel.logout.session.required": "true"
       },
       "protocolMappers": [
