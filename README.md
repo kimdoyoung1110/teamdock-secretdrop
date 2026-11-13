@@ -44,7 +44,7 @@ Keycloak은 요청이 없으면 0대로 줄어든다. 오랜만에 접속하면 
 - Keycloak은 상시 실행되는 컨테이너라 Vercel에 올릴 수 없어, 이미지를 빌드해 Cloud Run에 올린다.
 - 로컬과 운영은 같은 `realm-export.json`을 쓴다. 주소와 Client Secret만 환경변수로 달라진다.
 
-다이어그램은 [D2](https://d2lang.com)(오픈소스, 텍스트로 쓰는 다이어그램 도구)로 그렸다. 소스는 [docs/architecture/](docs/architecture)에 있고, 고친 뒤 `pnpm docs:diagrams`로 다시 그린다(`brew install d2` 필요).
+다이어그램은 [D2](https://d2lang.com)(오픈소스, 텍스트로 쓰는 다이어그램 도구)로 그렸고, 기술 로고는 [Simple Icons](https://simpleicons.org)(CC0)를 썼다. 소스는 [docs/architecture/](docs/architecture)에 있고, 고친 뒤 `pnpm docs:diagrams`로 다시 그린다(`brew install d2` 필요).
 
 ## 발표 자료
 

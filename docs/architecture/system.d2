@@ -4,55 +4,107 @@ vars: {
   d2-config: {
     layout-engine: elk
     theme-id: 0
-    pad: 30
+    pad: 20
   }
 }
-# 격자 배치: 1행 브라우저, 2행 Keycloak, 3행 두 서비스, 4행 서비스 DB.
+
 classes: {
-  client: {style: {fill: "#17142B"; stroke: "#17142B"; font-color: "#FFFFFF"; border-radius: 10; font-size: 22}}
-  service: {style: {fill: "#F3F1FB"; stroke: "#5B3FD6"; stroke-width: 2; border-radius: 10; font-size: 22}}
-  idp: {style: {fill: "#FFF4E0"; stroke: "#F08C00"; stroke-width: 2; border-radius: 10; font-size: 22}}
-  store: {shape: cylinder; style: {fill: "#FFFFFF"; stroke: "#868E96"; font-size: 18}}
-  browser-flow: {style: {stroke: "#17142B"; stroke-width: 3; font-size: 18; font-color: "#17142B"}}
-  server-flow: {style: {stroke: "#4A4666"; stroke-width: 2; stroke-dash: 5; font-size: 17; font-color: "#4A4666"}}
-  api-flow: {style: {stroke: "#5B3FD6"; stroke-width: 3; font-size: 18; font-color: "#5B3FD6"; bold: true}}
-  logout-flow: {style: {stroke: "#E03131"; stroke-width: 2; stroke-dash: 5; font-size: 17; font-color: "#E03131"; bold: true}}
-  data-flow: {style: {stroke: "#ADB5BD"; stroke-width: 2; font-size: 15}}
+  card: {style: {fill: "#FFFFFF"; stroke: "#D9D5F0"; stroke-width: 2; border-radius: 16; shadow: true; font-size: 24; bold: true; font-color: "#17142B"}}
+  card-a: {style: {fill: "#FFFFFF"; stroke: "#17142B"; stroke-width: 2; border-radius: 16; shadow: true; font-size: 24; bold: true; font-color: "#17142B"}}
+  card-b: {style: {fill: "#FFFFFF"; stroke: "#5B3FD6"; stroke-width: 2; border-radius: 16; shadow: true; font-size: 24; bold: true; font-color: "#5B3FD6"}}
+  card-kc: {style: {fill: "#FFFBF2"; stroke: "#F08C00"; stroke-width: 2; border-radius: 16; shadow: true; font-size: 24; bold: true; font-color: "#17142B"}}
+  row: {style: {fill: transparent; stroke-width: 0}}
+  logo: {shape: image; width: 56; height: 56; style: {font-size: 15; font-color: "#4A4666"; bold: false}}
+  db: {shape: image; width: 64; height: 64; style: {font-size: 16; font-color: "#4A4666"}}
+  note: {style: {fill: transparent; stroke-width: 0; font-size: 16; font-color: "#4A4666"}}
   spacer: {style: {opacity: 0}}
+  browser-flow: {style: {stroke: "#17142B"; stroke-width: 3; font-size: 17; font-color: "#17142B"; bold: true}}
+  server-flow: {style: {stroke: "#E03131"; stroke-width: 2; stroke-dash: 5; font-size: 16; font-color: "#E03131"; bold: true}}
+  api-flow: {style: {stroke: "#5B3FD6"; stroke-width: 3; font-size: 17; font-color: "#5B3FD6"; bold: true}}
+  data-flow: {style: {stroke: "#C5C9D0"; stroke-width: 2}}
 }
 
 arch: "" {
-  grid-rows: 4
+  grid-rows: 5
   grid-columns: 3
-  horizontal-gap: 280
-  vertical-gap: 150
+  horizontal-gap: 200
+  vertical-gap: 110
   style: {fill: transparent; stroke-width: 0}
 
   s1: "" {class: spacer}
-  browser: "Browser\n\ncookies: KEYCLOAK_SESSION\nteamdock.session · secretdrop.session\n\nWebCrypto: AES-256-GCM, PBKDF2\nkey stays in URL #fragment" {class: client}
-  db-kc: "keycloak DB\nusers\nSSO sessions" {class: store}
-
-  s3: "" {class: spacer}
-  keycloak: "Keycloak 26\nIdentity Provider\n\nrealm: teamdock\nclients: teamdock, secretdrop\nPKCE S256 · RS256 keys (JWKS)" {class: idp}
+  browser: Browser {
+    class: card-a
+    grid-columns: 3
+    horizontal-gap: 44
+    chrome: "Web app" {class: logo; icon: ./icons/googlechrome.svg}
+    oidc: "OIDC redirect\nsession cookies" {class: logo; icon: ./icons/openid.svg}
+    ts: "WebCrypto\nAES-256-GCM · PBKDF2" {class: logo; icon: ./icons/typescript.svg}
+  }
   s2: "" {class: spacer}
-
-  teamdock: "TeamDock — Service A\nNext.js + Auth.js\n\nteams · invites · members\nGET /api/teams/me\nPOST /api/backchannel-logout" {class: service}
+  t1: "" {class: spacer; height: 90}
+  t2: "" {class: spacer; height: 90}
+  t3: "" {class: spacer; height: 90}
+  teamdock: TeamDock · Service A {
+    class: card
+    grid-columns: 3
+    horizontal-gap: 44
+    next: "Next.js 16" {class: logo; icon: ./icons/nextdotjs.svg}
+    ts: "TypeScript" {class: logo; icon: ./icons/typescript.svg}
+    orm: "Drizzle ORM" {class: logo; icon: ./icons/drizzle.svg}
+  }
+  s3: "" {class: spacer}
+  secretdrop: SecretDrop · Service B {
+    class: card-b
+    grid-columns: 3
+    horizontal-gap: 44
+    next: "Next.js 16" {class: logo; icon: ./icons/nextdotjs.svg}
+    ts: "TypeScript" {class: logo; icon: ./icons/typescript.svg}
+    orm: "Drizzle ORM" {class: logo; icon: ./icons/drizzle.svg}
+  }
+  db-td: "" {
+    class: row
+    grid-columns: 3
+    horizontal-gap: 0
+    l: "" {class: spacer}
+    pg: "teamdock DB\nteams · team_members\nrevoked_sessions" {class: db; icon: ./icons/postgresql.svg}
+    r: "" {class: spacer}
+  }
+  keycloak: Keycloak 26 · Identity Provider {
+    class: card-kc
+    grid-columns: 3
+    horizontal-gap: 44
+    kc: "realm: teamdock\n2 clients" {class: logo; icon: ./icons/keycloak.svg}
+    oidc: "OIDC\nPKCE S256" {class: logo; icon: ./icons/openid.svg}
+    jwt: "RS256 JWT\nJWKS" {class: logo; icon: ./icons/jsonwebtokens.svg}
+  }
+  db-sd: "" {
+    class: row
+    grid-columns: 3
+    horizontal-gap: 0
+    l: "" {class: spacer}
+    pg: "secretdrop DB\nsecrets · access_logs\nrevoked_sessions" {class: db; icon: ./icons/postgresql.svg}
+    r: "" {class: spacer}
+  }
   s4: "" {class: spacer}
-  secretdrop: "SecretDrop — Service B\nNext.js + Auth.js\n\nciphertext only · burn after read\nteam-only secrets · access log\nPOST /api/backchannel-logout" {class: service}
-
-  db-td: "teamdock DB\nteams · team_members\nrevoked_sessions" {class: store}
+  db-kc: "" {
+    class: row
+    grid-columns: 3
+    horizontal-gap: 0
+    l: "" {class: spacer}
+    pg: "keycloak DB\nusers · SSO sessions" {class: db; icon: ./icons/postgresql.svg}
+    r: "" {class: spacer}
+  }
   s5: "" {class: spacer}
-  db-sd: "secretdrop DB\nsecrets · access_logs\nrevoked_sessions" {class: store}
 }
 
 arch.browser -> arch.teamdock: "① pages" {class: browser-flow}
-arch.browser <-> arch.keycloak: "② OIDC login (Authorization Code + PKCE)\nsession cookie reused → SSO" {class: browser-flow}
-arch.browser -> arch.secretdrop: "③ pages, no login prompt\nuploads ciphertext only" {class: browser-flow}
+arch.browser <-> arch.keycloak: "② OIDC login · Authorization Code + PKCE\nsession cookie reused → SSO" {class: browser-flow}
+arch.browser -> arch.secretdrop: "③ pages · no login prompt\nuploads ciphertext only" {class: browser-flow}
 
-arch.teamdock <-> arch.keycloak: "code → tokens (client secret)\nBack-Channel Logout ←" {class: logout-flow}
-arch.secretdrop <-> arch.keycloak: "code → tokens (client secret)\nBack-Channel Logout ←" {class: logout-flow}
+arch.teamdock <-> arch.keycloak: "code → tokens (client secret)\n← Back-Channel Logout" {class: server-flow}
+arch.secretdrop <-> arch.keycloak: "code → tokens (client secret)\n← Back-Channel Logout" {class: server-flow}
 arch.secretdrop -> arch.teamdock: "④ GET /api/teams/me\nBearer access token (aud: teamdock)" {class: api-flow}
 
-arch.teamdock -> arch.db-td: {class: data-flow}
-arch.keycloak -> arch.db-kc: {class: data-flow}
-arch.secretdrop -> arch.db-sd: {class: data-flow}
+arch.teamdock -> arch.db-td.pg: {class: data-flow}
+arch.keycloak -> arch.db-kc.pg: {class: data-flow}
+arch.secretdrop -> arch.db-sd.pg: {class: data-flow}
