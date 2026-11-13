@@ -16,3 +16,8 @@ PPT 트러블슈팅 슬라이드 소재. 겪은 문제를 한 항목씩 남긴�
 - **JWT 세션은 서버에서 지울 수 없음**: 앱 세션이 쿠키 안의 JWT라서 Back-Channel 요청(브라우저를 거치지 않음)으로는 쿠키를 지울 방법이 없다. 세션 저장소를 따로 두는 대신 "끊긴 sid 목록"만 DB에 두고 요청마다 대조한다.
 - **컨테이너에서 호스트의 앱 호출**: Keycloak은 컨테이너 안에 있어 `localhost:9000`으로는 앱에 닿지 않는다. Back-Channel URL은 `host.docker.internal`로 등록했다.
 - **오래된 세션으로 로그아웃하면 확인 화면**: 이미 끝난 Keycloak 세션의 `id_token_hint`로 로그아웃을 요청하면 Keycloak이 바로 돌려보내지 않고 "로그아웃하시겠습니까?" 확인 화면을 띄운다. Back-Channel Logout 적용 후에는 끊긴 세션이 앱에서도 로그아웃 처리되어 이 경로로 들어오지 않는다.
+- **Keycloak을 Vercel에 못 올림**: Vercel은 요청마다 잠깐 실행되는 함수만 돌린다. Keycloak은 계속 떠 있어야 하는 Java 서버라 컨테이너를 돌릴 수 있는 Cloud Run에 따로 올렸다.
+- **로컬과 운영의 realm 설정 이원화**: redirect URI와 Client Secret이 환경마다 달라 파일을 두 개 관리해야 할 뻔했다. Keycloak의 realm import가 `${변수:기본값}` 치환을 지원해서 파일 하나로 통일했다. 로컬은 기본값, 운영은 Cloud Run 환경변수가 들어간다.
+- **Apple Silicon에서 빌드한 이미지**: Cloud Run은 amd64만 실행한다. Mac에서 그냥 빌드하면 arm64 이미지가 만들어져 실행되지 않으므로 `--platform linux/amd64`로 빌드했다.
+- **프록시 뒤의 Keycloak**: Cloud Run이 HTTPS를 끝내고 컨테이너에는 HTTP로 넘긴다. `KC_PROXY_HEADERS=xforwarded`와 `KC_HOSTNAME`을 주지 않으면 Keycloak이 issuer를 `http://`로 만들어 토큰 검증이 깨진다.
+- **Neon 연결 방식**: 서버리스인 Vercel 앱은 연결이 자주 생겼다 사라져 pooled 주소를, 연결을 오래 쥐는 Keycloak은 direct 주소를 쓴다.

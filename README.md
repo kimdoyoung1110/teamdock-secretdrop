@@ -6,6 +6,17 @@ Keycloak SSO로 묶인 두 서비스. 팀플 비밀값을 카톡 대신 링크�
 - **SecretDrop** (`apps/secretdrop`, 9001): 종단간 암호화(AES-256-GCM) 시크릿 공유
 - **Keycloak** (8180): 두 서비스의 공통 로그인(SSO)
 
+## 배포된 서비스
+
+| 서비스 | 주소 | 플랫폼 |
+|---|---|---|
+| TeamDock | https://teamdock-sso.vercel.app | Vercel |
+| SecretDrop | https://secretdrop-sso.vercel.app | Vercel |
+| Keycloak | https://keycloak-936592447455.us-east1.run.app | Google Cloud Run |
+| DB | Postgres 1개 인스턴스에 DB 3개 | Neon |
+
+Keycloak은 요청이 없으면 0대로 줄어든다. 오랜만에 접속하면 첫 로그인 화면이 뜨는 데 수십 초 걸릴 수 있다.
+
 ## 로컬 실행
 
 필요한 것: Docker, Node 22, pnpm 9
@@ -56,3 +67,28 @@ pnpm dev:secretdrop                                           # http://localhost
 
 - 암호화·복호화는 `apps/secretdrop/src/lib/crypto.ts`에서 WebCrypto API로만 한다.
 - 서버가 받는 값은 `apps/secretdrop/src/lib/actions.ts`의 `createSecret` 입력이 전부다. 평문과 키는 없다.
+
+## 배포 구성
+
+```
+브라우저 ──▶ teamdock-sso.vercel.app  (서비스 A) ──┐
+        ──▶ secretdrop-sso.vercel.app (서비스 B) ──┼──▶ Neon Postgres
+        ──▶ keycloak-….run.app        (Keycloak) ──┘
+                     │  Back-Channel Logout (서버 → 서버)
+                     └──▶ 두 앱의 /api/backchannel-logout
+```
+
+- **앱 2개**: 같은 레포를 Vercel 프로젝트 2개에 연결하고 Root Directory만 `apps/teamdock`, `apps/secretdrop`으로 다르게 둔다. `main`에 push하면 둘 다 자동 배포된다.
+- **Keycloak**: `infra/keycloak/Dockerfile`로 만든 이미지를 Cloud Run에 올린다. realm 설정은 로컬과 같은 `realm-export.json`이고, 주소와 Client Secret은 환경변수(`TEAMDOCK_URL`, `TEAMDOCK_CLIENT_SECRET` 등)로 주입한다. 값이 없으면 로컬 개발용 기본값이 쓰인다.
+- **과금 방지**: Cloud Run 최대 인스턴스 1, 최소 0. 결제 계정에 1,500원 예산 알림을 걸었다.
+- 세 주소가 서로 다른 사이트라 앱 쿠키는 완전히 분리되고, 공유되는 것은 Keycloak 세션뿐이다.
+
+### Keycloak 다시 배포하기
+
+```bash
+cd infra/keycloak
+docker buildx build --platform linux/amd64 -t us-east1-docker.pkg.dev/<프로젝트>/keycloak/keycloak:<태그> --push .
+gcloud run deploy keycloak --project <프로젝트> --region us-east1 --image us-east1-docker.pkg.dev/<프로젝트>/keycloak/keycloak:<태그>
+```
+
+realm이 이미 DB에 있으면 `--import-realm`은 건너뛴다. 운영 realm 설정을 바꾸려면 관리자 콘솔에서 고친다.

@@ -56,10 +56,14 @@ pnpm workspace만 사용한다. Turborepo 등 모노레포 도구는 넣지 않�
 
 ## 배포
 
-- 서비스 A, B: Vercel Hobby (프로젝트 2개, Root Directory로 구분)
-- DB: Neon Free
-- Keycloak: Google Cloud Run (최대 인스턴스 1, 최소 0, 예산 알림 $1)
+- 서비스 A: https://teamdock-sso.vercel.app (Vercel 프로젝트 `teamdock-sso`, Root Directory `apps/teamdock`)
+- 서비스 B: https://secretdrop-sso.vercel.app (Vercel 프로젝트 `secretdrop-sso`, Root Directory `apps/secretdrop`)
+- Keycloak: https://keycloak-936592447455.us-east1.run.app (Cloud Run, 프로젝트 `teamdock-sso-b8a0ed`, us-east1, 최대 1 / 최소 0)
+- DB: Neon 프로젝트 `teamdock-sso` (us-east-1), DB 3개
+- `main`에 push하면 Vercel 두 프로젝트가 자동 배포된다. Vercel 스코프는 개인 Hobby 팀(`kim-do-youngs-projects-d53b7189`)이다.
+- 운영 비밀값(Client Secret, Keycloak 관리자 비밀번호, DB 주소)은 커밋되지 않는 `infra/.env.prod`에 있다.
 - 로컬은 `infra/compose.dev.yml`로 Keycloak + Postgres 실행. 채점자가 재현 가능해야 한다.
+- `apps/*`에서 `vercel link`를 다시 실행하면 `.env.local`에 `VERCEL_OIDC_TOKEN`이 추가된다. 로컬 값은 유지된다.
 
 ## 작업 규칙
 
