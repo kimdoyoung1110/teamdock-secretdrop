@@ -11,4 +11,4 @@ PNG는 `architecture.html`을 브라우저에서 열어 `.page` 영역을 캡처
 
 - 레이아웃과 스타일: [stack-diagram](https://github.com/caru-ini/stack-diagram)의 템플릿(MIT, `LICENSE-stack-diagram.txt`). 좌표 규칙은 그 저장소의 `references/geometry.md`를 따랐다.
 - 글꼴: Geist, JetBrains Mono (SIL OFL 1.1, `fonts/`의 라이선스 파일)
-- 로고: [Simple Icons](https://simpleicons.org) (CC0). 각 로고는 해당 소유자의 상표다.
+- 로고: stack-diagram의 `fetch_icons.py`로 받은 공식 로고. 출처는 [svgl](https://svgl.app)(Next.js, Auth.js, Drizzle, Keycloak, PostgreSQL, Neon, Vercel, GitHub, Google Cloud), Google Cloud product icons(Artifact Registry, Cloud Run), [Lucide](https://lucide.dev)(열쇠 아이콘)다. 각 로고는 해당 소유자의 상표이며 색을 바꾸지 않았다.
