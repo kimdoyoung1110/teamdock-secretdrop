@@ -7,7 +7,10 @@
   "loginWithEmailAllowed": true,
   "resetPasswordAllowed": false,
   "internationalizationEnabled": true,
-  "supportedLocales": ["ko", "en"],
+  "supportedLocales": [
+    "ko",
+    "en"
+  ],
   "defaultLocale": "ko",
   "clients": [
     {
@@ -25,8 +28,12 @@
       "serviceAccountsEnabled": false,
       "rootUrl": "http://localhost:9000",
       "baseUrl": "http://localhost:9000",
-      "redirectUris": ["http://localhost:9000/api/auth/callback/keycloak"],
-      "webOrigins": ["http://localhost:9000"],
+      "redirectUris": [
+        "http://localhost:9000/api/auth/callback/keycloak"
+      ],
+      "webOrigins": [
+        "http://localhost:9000"
+      ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://localhost:9000/*",
@@ -49,8 +56,12 @@
       "serviceAccountsEnabled": false,
       "rootUrl": "http://localhost:9001",
       "baseUrl": "http://localhost:9001",
-      "redirectUris": ["http://localhost:9001/api/auth/callback/keycloak"],
-      "webOrigins": ["http://localhost:9001"],
+      "redirectUris": [
+        "http://localhost:9001/api/auth/callback/keycloak"
+      ],
+      "webOrigins": [
+        "http://localhost:9001"
+      ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
         "post.logout.redirect.uris": "http://localhost:9001/*",
@@ -79,7 +90,13 @@
       "lastName": "Kim",
       "enabled": true,
       "emailVerified": true,
-      "credentials": [{ "type": "password", "value": "alice1234", "temporary": false }]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "alice1234",
+          "temporary": false
+        }
+      ]
     },
     {
       "username": "bob",
@@ -88,7 +105,28 @@
       "lastName": "Lee",
       "enabled": true,
       "emailVerified": true,
-      "credentials": [{ "type": "password", "value": "bob1234", "temporary": false }]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "bob1234",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "carol",
+      "email": "carol@example.com",
+      "firstName": "Carol",
+      "lastName": "Park",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "carol1234",
+          "temporary": false
+        }
+      ]
     }
   ]
 }

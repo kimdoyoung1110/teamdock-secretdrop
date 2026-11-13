@@ -28,4 +28,31 @@ pnpm --filter teamdock db:push                            # 테이블 생성
 pnpm dev:teamdock                                         # http://localhost:9000
 ```
 
-SecretDrop 실행 방법은 구현 후 추가 예정.
+### SecretDrop (서비스 B)
+
+```bash
+cp apps/secretdrop/.env.example apps/secretdrop/.env.local   # AUTH_SECRET만 채운다
+pnpm --filter secretdrop db:push
+pnpm dev:secretdrop                                           # http://localhost:9001
+```
+
+두 앱을 모두 띄운 뒤 TeamDock에 로그인하고, 팀 화면의 "SecretDrop에서 시크릿 만들기"를 누르면 로그인 화면 없이 SecretDrop으로 넘어간다.
+
+테스트 사용자는 alice, bob, carol 세 명이다(비밀번호는 `infra/keycloak/realm-export.json`). carol은 어느 팀에도 속하지 않아 팀 전용 시크릿의 권한 거부를 확인할 때 쓴다.
+
+## 암호화 구조
+
+```
+[작성자 브라우저]                              [SecretDrop 서버 / DB]
+링크 키 = 무작위 256비트
+암호문 = AES-256-GCM(링크 키, iv, 평문)   ──▶  암호문, iv, (salt)만 저장
+(선택) 비밀번호 → PBKDF2-SHA-256 60만 회
+       → 그 키로 한 겹 더 AES-256-GCM
+공유 링크 = /s/{id}#{링크 키}                   # 뒤는 서버로 전송되지 않는다
+
+[열람자 브라우저]
+"시크릿 열기" → 암호문 수신 → # 뒤 키로 복호화   서버는 암호문을 즉시 삭제(1회 열람)
+```
+
+- 암호화·복호화는 `apps/secretdrop/src/lib/crypto.ts`에서 WebCrypto API로만 한다.
+- 서버가 받는 값은 `apps/secretdrop/src/lib/actions.ts`의 `createSecret` 입력이 전부다. 평문과 키는 없다.
