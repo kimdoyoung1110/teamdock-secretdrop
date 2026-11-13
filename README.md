@@ -19,4 +19,13 @@ pnpm infra:admin-http  # (선택) 관리자 콘솔이 "HTTPS required"로 막힐
 - realm `teamdock`에 클라이언트 `teamdock`, `secretdrop`과 테스트 사용자 2명이 `infra/keycloak/realm-export.json`에서 자동 생성된다.
 - realm 설정을 고쳤으면 `pnpm infra:reset && pnpm infra:up`으로 다시 import한다.
 
-앱 실행 방법은 구현 후 추가 예정.
+### TeamDock (서비스 A)
+
+```bash
+pnpm install
+cp apps/teamdock/.env.example apps/teamdock/.env.local   # AUTH_SECRET만 채운다: openssl rand -base64 32
+pnpm --filter teamdock db:push                            # 테이블 생성
+pnpm dev:teamdock                                         # http://localhost:9000
+```
+
+SecretDrop 실행 방법은 구현 후 추가 예정.

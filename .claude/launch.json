@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "teamdock",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "teamdock", "dev"],
+      "port": 9000
+    },
+    {
+      "name": "secretdrop",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "secretdrop", "dev"],
+      "port": 9001
+    }
+  ]
+}
