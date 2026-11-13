@@ -17,6 +17,12 @@ Keycloak SSO로 묶인 두 서비스. 팀플 비밀값을 카톡 대신 링크�
 
 Keycloak은 요청이 없으면 0대로 줄어든다. 오랜만에 접속하면 첫 로그인 화면이 뜨는 데 수십 초 걸릴 수 있다.
 
+## 발표 자료
+
+- [docs/presentation/TeamDock-SecretDrop.pptx](docs/presentation/TeamDock-SecretDrop.pptx) (PDF: [같은 폴더](docs/presentation/TeamDock-SecretDrop.pdf))
+- [docs/verification.md](docs/verification.md): SSO 동작 검증 시나리오
+- [docs/troubleshooting.md](docs/troubleshooting.md): 구현 중 겪은 문제와 해결
+
 ## 로컬 실행
 
 필요한 것: Docker, Node 22, pnpm 9
