@@ -17,6 +17,35 @@ Keycloak SSO로 묶인 두 서비스. 팀플 비밀값을 카톡 대신 링크�
 
 Keycloak은 요청이 없으면 0대로 줄어든다. 오랜만에 접속하면 첫 로그인 화면이 뜨는 데 수십 초 걸릴 수 있다.
 
+## 아키텍처
+
+### 시스템 아키텍처
+
+실행 중에 누가 누구와 왜 통신하는지를 나타낸다.
+
+![시스템 아키텍처](docs/architecture/system.svg)
+
+| 선 | 의미 |
+|---|---|
+| 검은 실선 ①②③ | 브라우저를 거치는 흐름. ②에서 한 번 로그인하면 Keycloak 세션 쿠키가 남아, ③에서 SecretDrop에 갈 때 로그인 화면이 뜨지 않는다(SSO). |
+| 빨간 점선 | 서버끼리 직접 하는 통신. 서비스가 `code`를 Client Secret과 함께 토큰으로 바꾸고, 로그아웃 시 Keycloak이 각 서비스에 Back-Channel Logout을 보낸다. |
+| 보라 실선 ④ | SecretDrop이 사용자의 Access Token으로 TeamDock에 팀 소속을 묻는다. 팀 전용 시크릿의 권한 확인에 쓴다. |
+| 회색 선 | 각 서비스 전용 DB. 서로의 DB에는 접근하지 않는다. |
+
+브라우저와 SecretDrop 사이에는 암호문만 오간다. 암호화와 복호화는 브라우저의 WebCrypto가 하고, 키는 링크의 `#` 뒤에만 있다.
+
+### 플랫폼 아키텍처
+
+코드가 어디서 빌드되어 어디에 올라가는지를 나타낸다.
+
+![플랫폼 아키텍처](docs/architecture/platform.svg)
+
+- `main`에 push하면 Vercel이 두 앱을 각각 배포한다. 같은 레포를 프로젝트 2개에 연결하고 Root Directory만 다르게 두었다.
+- Keycloak은 상시 실행되는 컨테이너라 Vercel에 올릴 수 없어, 이미지를 빌드해 Cloud Run에 올린다.
+- 로컬과 운영은 같은 `realm-export.json`을 쓴다. 주소와 Client Secret만 환경변수로 달라진다.
+
+다이어그램은 [D2](https://d2lang.com)(오픈소스, 텍스트로 쓰는 다이어그램 도구)로 그렸다. 소스는 [docs/architecture/](docs/architecture)에 있고, 고친 뒤 `pnpm docs:diagrams`로 다시 그린다(`brew install d2` 필요).
+
 ## 발표 자료
 
 - [docs/presentation/TeamDock-SecretDrop.pptx](docs/presentation/TeamDock-SecretDrop.pptx) (PDF: [같은 폴더](docs/presentation/TeamDock-SecretDrop.pdf))

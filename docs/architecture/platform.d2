@@ -1,0 +1,65 @@
+# Platform architecture — where each piece is built and hosted.
+# Render: pnpm docs:diagrams
+vars: {
+  d2-config: {
+    layout-engine: elk
+    theme-id: 0
+    pad: 30
+  }
+}
+direction: down
+
+classes: {
+  platform: {style: {fill: "#FAFAFC"; stroke: "#868E96"; stroke-width: 2; border-radius: 10; font-size: 22; bold: true}}
+  app: {style: {fill: "#F3F1FB"; stroke: "#5B3FD6"; stroke-width: 2; border-radius: 8; font-size: 18}}
+  idp: {style: {fill: "#FFF4E0"; stroke: "#F08C00"; stroke-width: 2; border-radius: 8; font-size: 18}}
+  part: {style: {fill: "#FFFFFF"; stroke: "#ADB5BD"; border-radius: 8; font-size: 18}}
+  store: {shape: cylinder; style: {fill: "#FFFFFF"; stroke: "#868E96"; font-size: 18}}
+  person: {shape: person; style: {font-size: 18}}
+  deploy: {style: {stroke: "#5B3FD6"; stroke-width: 3; font-color: "#5B3FD6"; font-size: 17; bold: true}}
+  traffic: {style: {stroke: "#17142B"; stroke-width: 3; font-size: 17}}
+  data: {style: {stroke: "#868E96"; stroke-width: 2; stroke-dash: 5; font-size: 16}}
+}
+
+dev: Developer {class: person}
+
+github: GitHub — pnpm monorepo {
+  class: platform
+  apps: "apps/teamdock\napps/secretdrop" {class: app}
+  infra: "infra/keycloak\nDockerfile · realm-export.json" {class: idp}
+  compose: "infra/compose.dev.yml" {class: part}
+}
+
+vercel: Vercel (Hobby) {
+  class: platform
+  td: "teamdock-sso.vercel.app\nroot: apps/teamdock" {class: app}
+  sd: "secretdrop-sso.vercel.app\nroot: apps/secretdrop" {class: app}
+}
+
+gcp: Google Cloud — us-east1 {
+  class: platform
+  ar: "Artifact Registry\nkeycloak image (linux/amd64)" {class: part}
+  run: "Cloud Run — keycloak\nmin 0 · max 1 instance" {class: idp}
+  ar -> run: "gcloud run deploy" {class: deploy}
+}
+
+local: Local — docker compose {
+  class: platform
+  stack: "Keycloak :8180 · Postgres :5433\nnext dev :9000 / :9001\nsame realm file, default values" {class: part}
+}
+
+neon: "Neon Postgres — us-east-1\nkeycloak · teamdock · secretdrop" {class: store}
+
+user: User / Grader {class: person}
+
+dev -> github: "git push" {class: deploy}
+github.apps -> vercel: "auto deploy on push to main" {class: deploy}
+github.infra -> gcp.ar: "docker buildx --push" {class: deploy}
+github.compose -> local: "pnpm infra:up" {class: deploy}
+
+vercel -> neon: "pooled connections" {class: data}
+gcp.run -> neon: "direct connection" {class: data}
+vercel <-> gcp.run: "OIDC · token exchange · Back-Channel Logout" {class: data}
+
+user -> vercel: "HTTPS" {class: traffic}
+user -> gcp.run: "login" {class: traffic}
