@@ -32,3 +32,10 @@ export const accessLogs = pgTable("access_logs", {
   viewerName: text("viewer_name").notNull(),
   viewedAt: timestamp("viewed_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Back-Channel Logout으로 무효화된 Keycloak 세션(sid) 목록.
+// 세션을 쿠키(JWT)에 담아 서버에 저장소가 없으므로, "끊긴 세션"만 따로 기록해 요청마다 대조한다.
+export const revokedSessions = pgTable("revoked_sessions", {
+  sid: text("sid").primaryKey(),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }).notNull().defaultNow(),
+});

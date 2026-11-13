@@ -1,5 +1,6 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
+import { isSessionRevoked } from "@/lib/revocation";
 
 declare module "next-auth" {
   interface Session {
@@ -35,13 +36,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     nonce: cookie("nonce"),
   },
   callbacks: {
-    jwt({ token, account, profile }) {
+    async jwt({ token, account, profile }) {
       // 로그인 직후에만 account/profile이 들어온다.
       if (account && profile) {
         token.sub = profile.sub ?? token.sub;
         token.sid = profile.sid;
         token.idToken = account.id_token;
+        return token;
       }
+      // 다른 서비스에서 로그아웃해 Keycloak이 이 세션을 끊으라고 알려 왔다면 null을 돌려 로그아웃 처리한다.
+      if (typeof token.sid === "string" && (await isSessionRevoked(token.sid))) return null;
       return token;
     },
     session({ session, token }) {

@@ -12,3 +12,7 @@ PPT 트러블슈팅 슬라이드 소재. 겪은 문제를 한 항목씩 남긴�
 - **로그인을 거치면 `#키`가 사라짐**: 팀 전용 시크릿을 비로그인으로 열면 Keycloak 로그인 폼을 거치는데, 폼 제출은 새 탐색이라 URL fragment가 유지되지 않는다. 떠나기 전에 키를 `sessionStorage`에 맡겼다가 돌아와서 꺼낸다. `sessionStorage`는 서버로 전송되지 않아 E2E 원칙을 깨지 않는다.
 - **1회 열람인데 비밀번호를 틀리면**: 암호문을 받는 순간 서버에서 파기되므로, 비밀번호를 틀렸을 때 다시 받을 수 없다. 받은 암호문을 브라우저 메모리에 들고 있어 비밀번호만 다시 시도할 수 있게 했다.
 - **Access Token 5분 만료**: SecretDrop이 TeamDock API를 부를 때 쓰는 Access Token은 5분이면 만료된다. Auth.js의 `jwt` 콜백에서 Refresh Token으로 갱신한다.
+- **한쪽에서 로그아웃해도 다른 쪽 세션이 남음**: 강의 마지막 슬라이드와 같은 상황. SecretDrop에서 로그아웃해 Keycloak 세션이 끝났는데도 TeamDock은 자기 쿠키가 살아 있어 계속 로그인 상태였다. Back-Channel Logout으로 해결했다. Keycloak이 각 앱의 `/api/backchannel-logout`에 서명된 `logout_token`을 직접 보내고, 앱은 서명 검증 후 그 `sid`를 `revoked_sessions`에 기록해 이후 요청에서 로그아웃 처리한다.
+- **JWT 세션은 서버에서 지울 수 없음**: 앱 세션이 쿠키 안의 JWT라서 Back-Channel 요청(브라우저를 거치지 않음)으로는 쿠키를 지울 방법이 없다. 세션 저장소를 따로 두는 대신 "끊긴 sid 목록"만 DB에 두고 요청마다 대조한다.
+- **컨테이너에서 호스트의 앱 호출**: Keycloak은 컨테이너 안에 있어 `localhost:9000`으로는 앱에 닿지 않는다. Back-Channel URL은 `host.docker.internal`로 등록했다.
+- **오래된 세션으로 로그아웃하면 확인 화면**: 이미 끝난 Keycloak 세션의 `id_token_hint`로 로그아웃을 요청하면 Keycloak이 바로 돌려보내지 않고 "로그아웃하시겠습니까?" 확인 화면을 띄운다. Back-Channel Logout 적용 후에는 끊긴 세션이 앱에서도 로그아웃 처리되어 이 경로로 들어오지 않는다.

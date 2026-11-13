@@ -1,6 +1,7 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import Keycloak from "next-auth/providers/keycloak";
+import { isSessionRevoked } from "@/lib/revocation";
 
 declare module "next-auth" {
   interface Session {
@@ -75,6 +76,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.accessTokenExpires = (account.expires_at ?? 0) * 1000;
         return token;
       }
+      // 다른 서비스에서 로그아웃해 Keycloak이 이 세션을 끊으라고 알려 왔다면 null을 돌려 로그아웃 처리한다.
+      if (typeof token.sid === "string" && (await isSessionRevoked(token.sid))) return null;
       if (!token.refreshToken) return token;
       if (Date.now() < (token.accessTokenExpires as number) - 10_000) return token;
       return refreshAccessToken(token);
