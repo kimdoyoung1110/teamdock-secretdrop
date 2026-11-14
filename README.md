@@ -38,6 +38,7 @@ Keycloak은 요청이 없으면 0대로 줄어든다. 오랜만에 접속하면 
 
 ## 발표 자료
 
+- 발표 영상: https://youtu.be/XKPEBPNgGRs
 - [docs/presentation/TeamDock-SecretDrop.pptx](docs/presentation/TeamDock-SecretDrop.pptx) (PDF: [같은 폴더](docs/presentation/TeamDock-SecretDrop.pdf))
 - [docs/verification.md](docs/verification.md): SSO 동작 검증 시나리오
 - [docs/troubleshooting.md](docs/troubleshooting.md): 구현 중 겪은 문제와 해결
