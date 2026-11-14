@@ -13,3 +13,6 @@ dist/
 *.log
 
 .claude/settings.local.json
+
+# 학번이 들어간 제출용 파일은 공개 레포에 올리지 않는다.
+submission/
